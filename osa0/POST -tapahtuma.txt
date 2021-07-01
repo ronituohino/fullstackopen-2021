@@ -1,0 +1,34 @@
+title POST -tapahtuma
+
+selain->palvelin: HTTP POST, note, https://studies.cs.helsinki.fi/exampleapp/new_note
+palvelin->selain: HTTP Status Code 302, /location: https://studies.cs.helsinki.fi/exampleapp/notes
+note left of selain: 
+selain reagoi status koodiin 302 uudelleenohjaamalla käyttäjän
+palvelimen lähettämään /location sijaintiin, eli samalle sivulle: 
+https://studies.cs.helsinki.fi/exampleapp/notes
+end note
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+
+palvelin-->selain: HTML-koodi
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+palvelin-->selain: main.css
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+palvelin-->selain: main.js
+
+note over selain:
+selain alkaa suorittaa js-koodia
+joka pyytää JSON-datan palvelimelta
+end note
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+palvelin-->selain: [{content: "ayo", date: "2021-06-30T19:17:07.001Z"}, ...]
+
+note over selain:
+selain suorittaa tapahtumankäsittelijän
+joka renderöi muistiinpanot näytölle
+end note
+
+note over selain:
+nyt alun perin lähetetty note näkyy listassa, koska
+palvelin rekisteröi sen tietokantaan ja käyttäjä on ladannut tietokannan uudestaan
+end note

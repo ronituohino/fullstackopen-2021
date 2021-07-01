@@ -1,0 +1,24 @@
+html{
+    background-color: black;
+}
+
+body{
+    width: 1024px;
+
+    padding: 5px;
+    border: solid 10px white;
+    margin: auto;
+
+    background-color: aqua;
+}
+
+img {
+    display: block;
+    margin: auto;
+}
+
+h1 {
+    padding: auto;
+    border: dashed blue;
+    margin: 5px;
+}
