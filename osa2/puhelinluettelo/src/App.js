@@ -1,17 +1,22 @@
-import { number } from 'prop-types'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
 
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+
+  // Fetch persons data from db.json with axios
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then((persons) => {
+        console.log(persons.data)
+        setPersons(persons.data)
+      })
+  }, [])
 
   const addNewName = (event) => {
     event.preventDefault()
@@ -24,7 +29,7 @@ const App = () => {
       // If not, create new person
       const newPerson = {
         name: newName,
-        number: newNumber
+        number: newNumber,
       }
 
       setPersons(persons.concat(newPerson))
@@ -106,9 +111,9 @@ const Numbers = ({ persons, filter }) => {
       <h2>Numbers</h2>
       {persons.map(person =>
         filter === ''
-          ? <Person name={person.name} number={person.number} />
+          ? <Person key={person.name} name={person.name} number={person.number} />
           : person.name.toLowerCase().includes(filter.toLowerCase())
-            ? <Person name={person.name} number={person.number} />
+            ? <Person key={person.name} name={person.name} number={person.number} />
             : ''
       )}
     </>
@@ -117,7 +122,7 @@ const Numbers = ({ persons, filter }) => {
 
 const Person = ({ name, number }) => {
   return (
-    <p key={name}>
+    <p>
       {name} {number}
     </p>
   )
