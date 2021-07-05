@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import numbersService from './services/numbers'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -8,32 +8,77 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
+  const [notification, setNotification] = useState({ message: '', error: false })
+
   // Fetch persons data from db.json with axios
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then((persons) => {
-        console.log(persons.data)
-        setPersons(persons.data)
-      })
+    numbersService.all()
+      .then(result => setPersons(result))
   }, [])
 
-  const addNewName = (event) => {
+  const addNewPerson = (event) => {
     event.preventDefault()
 
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    }
+
+    const existing = persons.find(p => p.name === newName)
+
     // Check if person is already in numbers
-    if (persons.some(p => p.name === newName)) {
-      window.alert(`${newName} is already added to phonebook`)
+    if (typeof existing !== 'undefined') {
+      // Ask if we replace the contact number
+      if (window.confirm(
+        `${newName} is already added to phonebook, 
+        replace the old number with a new one?`)) {
+        numbersService.replace(existing.id, newPerson)
+          .then(data => {
+            setPersons(persons.map(p =>
+              p.id === data.id
+                ? data
+                : p
+            ))
+
+            showNotification(`Replaced ${newName}'s number with ${newNumber}`, false)
+          })
+          .catch(error => {
+            showNotification(
+              `Information of ${newName} has already been removed from server`,
+              true
+            )
+          })
+      }
     }
     else {
       // If not, create new person
-      const newPerson = {
-        name: newName,
-        number: newNumber,
-      }
+      numbersService.create(newPerson)
+        .then(addedPerson => {
+          setPersons(persons.concat(addedPerson))
 
-      setPersons(persons.concat(newPerson))
+          showNotification(`Added ${newPerson.name}`, false)
+        })
     }
+  }
+
+  const deleteExistingNumber = (person) => {
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      numbersService.del(person.id)
+        .then(data => {
+          setPersons(persons.filter(p =>
+            p.id !== person.id
+          ))
+
+          showNotification(`Removed ${person.name}`, false)
+        })
+    }
+  }
+
+  const showNotification = (message, error) => {
+    setNotification({ message, error })
+    setTimeout(() => {
+      setNotification({ message: '', error: false })
+    }, 3000)
   }
 
   const handleFilterChange = (event) => {
@@ -52,8 +97,11 @@ const App = () => {
     <div>
       <Phonebook handleFilterChange={handleFilterChange} />
 
+      <Notification notification={notification} />
+
       <Add
-        addNewName={addNewName}
+        addNewName={addNewPerson}
+
         newName={newName}
         handleNameChange={handleNameChange}
 
@@ -61,7 +109,11 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
 
-      <Numbers persons={persons} filter={filter} />
+      <Numbers
+        persons={persons}
+        filter={filter}
+        deleteCallback={deleteExistingNumber}
+      />
     </div>
   )
 
@@ -105,27 +157,59 @@ const Add = (props) => {
   )
 }
 
-const Numbers = ({ persons, filter }) => {
+const Numbers = ({ persons, filter, deleteCallback }) => {
   return (
     <>
       <h2>Numbers</h2>
       {persons.map(person =>
         filter === ''
-          ? <Person key={person.name} name={person.name} number={person.number} />
+          ? <Person
+            key={person.name}
+            person={person}
+            deleteCallback={deleteCallback}
+          />
           : person.name.toLowerCase().includes(filter.toLowerCase())
-            ? <Person key={person.name} name={person.name} number={person.number} />
+            ? <Person
+              key={person.name}
+              person={person}
+              deleteCallback={deleteCallback}
+            />
             : ''
       )}
     </>
   )
 }
 
-const Person = ({ name, number }) => {
+const Person = (props) => {
   return (
     <p>
-      {name} {number}
+      {props.person.name} {props.person.number}
+      <button onClick={() => props.deleteCallback(props.person)}>delete</button>
     </p>
   )
+}
+
+const Notification = ({ notification }) => {
+  const notificationStyle = {
+    color: notification.error ? 'red' : 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  }
+
+  if (notification.message === '') {
+    return ''
+  }
+  else {
+    return (
+      <div style={notificationStyle}>
+        {notification.message}
+      </div>
+    )
+  }
 }
 
 export default App
