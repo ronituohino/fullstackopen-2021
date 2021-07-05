@@ -6,7 +6,7 @@ const App = () => {
   const [searchResults, setSearchResults] = useState([])
 
   const [shownCountry, setShownCountry] = useState('')
-  const [weatherData, setWeatherData] = useState([])
+  const [weatherData, setWeatherData] = useState({})
 
 
 
@@ -43,13 +43,13 @@ const App = () => {
 
   // Fetch weather data once the shown country is updated
   useEffect(() => {
-    axios
-      .get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${shownCountry.capital}`)
-      .then((weatherData) => {
-        console.log(weatherData)
-        setWeatherData(weatherData)
-      })
-
+    if (shownCountry !== '') {
+      axios
+        .get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${shownCountry.capital}`)
+        .then((weatherData) => {
+          setWeatherData(weatherData)
+        })
+    }
   }, [shownCountry])
 
 
@@ -133,20 +133,19 @@ const CountryInfo = (props) => {
 }
 
 const Weather = ({ searchResults, weatherData }) => {
-  if (searchResults.length === 1) {
+  if (searchResults.length === 1 && Object.keys(weatherData).length > 0) {
     const country = searchResults[0]
-    if (country.name === weatherData.country) {
+    if (country.name === weatherData.data.location.country) {
       return (
         <>
           <h2>Weather in {country.capital}</h2>
-          <p>temperature: {weatherData.temperature} Celcius</p>
-          <img src={weatherData.weather_icons[0]} alt={weatherData.weather_descriptions[0]} />
-          <p>wind: {weatherData.wind_speed} mph direction {weatherData.wind_dir}</p>
+          <p><b>temperature:</b> {weatherData.data.current.temperature} Celcius</p>
+          <img src={weatherData.data.current.weather_icons[0]} alt={weatherData.data.current.weather_descriptions[0]} />
+          <p><b>wind:</b> {weatherData.data.current.wind_speed} mph direction {weatherData.data.current.wind_dir}</p>
         </>
       )
     }
     else {
-      console.log("?")
       return ''
     }
   }
