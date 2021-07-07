@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import numbersService from './services/numbers'
+import numbersService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
