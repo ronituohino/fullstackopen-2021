@@ -1,0 +1,3 @@
+[submodule "osa3/puhelinluettelo/fso-2021-puhelinluettelo"]
+	path = osa3/puhelinluettelo/fso-2021-puhelinluettelo
+	url = https://git.heroku.com/fso-2021-puhelinluettelo.git
