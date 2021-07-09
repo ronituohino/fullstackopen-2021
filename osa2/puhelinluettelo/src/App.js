@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import numbersService from './services/persons'
+import numbersService from './services/numbers'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -58,9 +58,6 @@ const App = () => {
 
           showNotification(`Added ${newPerson.name}`, false)
         })
-        .catch(error => {
-          showNotification(error.response.data.error, true)
-        })
     }
   }
 
@@ -74,21 +71,14 @@ const App = () => {
 
           showNotification(`Removed ${person.name}`, false)
         })
-        .catch(error => {
-          showNotification(error.response.data.error, true)
-        })
     }
   }
 
-  /**
- * @param {string} message The message to display
- * @param {Boolean} error Is this an error message?
- */
   const showNotification = (message, error) => {
     setNotification({ message, error })
     setTimeout(() => {
       setNotification({ message: '', error: false })
-    }, error ? 6000 : 3000)
+    }, 3000)
   }
 
   const handleFilterChange = (event) => {
