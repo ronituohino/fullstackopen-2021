@@ -6,12 +6,16 @@ const logger = require('./utils/logger')
 const cors = require('cors')
 
 const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
+
+const middleware = require('./utils/middleware')
+
 const mongoose = require('mongoose')
 
 logger.info('Connecting to MongoDB')
 
-const mongoUrl = `mongodb+srv://roni:${config.DB_PASSWORD}@test-cluster.ucpdr.mongodb.net/${config.DB_NAME}?retryWrites=true&w=majority`
-mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
+mongoose.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
   .then(() => {
     logger.info('Connected to MongoDB')
   })
@@ -23,5 +27,10 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/api/blogs', blogsRouter)
+app.use('/api/users', usersRouter)
+
+app.use('/api/login', loginRouter)
+
+app.use(middleware.errorHandler)
 
 module.exports = app

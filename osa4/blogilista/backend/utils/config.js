@@ -2,11 +2,11 @@ require('dotenv').config()
 
 let PORT = process.env.PORT
 
-let DB_NAME = process.env.DB_NAME
-let DB_PASSWORD = process.env.DB_PASSWORD
+let DB_URL = process.env.NODE_ENV === 'test'
+  ? process.env.DB_TEST_URL
+  : process.env.DB_URL
 
 module.exports = {
   PORT,
-  DB_NAME,
-  DB_PASSWORD
+  DB_URL
 }

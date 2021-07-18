@@ -12,7 +12,7 @@ const totalLikes = (blogs) => {
         return sum + val.likes
       }, 0)
     }
-  } 
+  }
 
   return 0
 }
@@ -21,22 +21,22 @@ const favoriteBlog = (blogs) => {
   if(Array.isArray(blogs) && blogs.length > 0)
   {
     let mostLikes = 0
-  let mostLikedBlog = {
-    title: '',
-    author: '',
-    likes: 0,
-  }
+    let mostLikedBlog = {
+      title: '',
+      author: '',
+      likes: 0,
+    }
 
     blogs.forEach((blog) => {
       if(blog.likes > mostLikes) {
         mostLikes = blog.likes
-  
+
         mostLikedBlog.title = blog.title
         mostLikedBlog.author = blog.author
         mostLikedBlog.likes = blog.likes
       }
     })
-  
+
     return mostLikedBlog
   }
 
@@ -87,7 +87,7 @@ const mostLikes = (blogs) => {
       most = b
     }
   })
-  
+
   return most
 }
 
