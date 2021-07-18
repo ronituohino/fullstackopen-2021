@@ -31,7 +31,6 @@ blogsRouter.post('/', mw.tokenExtractor, mw.userExtractor,  (request, response, 
     request.body['likes'] = 0
   }
 
-  console.log(request.body)
   const blog = new Blog(request.body)
 
   blog

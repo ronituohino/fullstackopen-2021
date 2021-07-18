@@ -127,11 +127,25 @@ test('modify a blog', async () => {
       .set('Authorization', `bearer ${token}`)
   }
 
-  const res = await updateLikes(firstBlog.id, firstBlog.user, 12)
+  const res = await updateLikes(firstBlog._id, firstBlog.user, 12)
 
   expect(res.body.likes).toBe(12)
 
-  await updateLikes(firstBlog.id, firstBlog.user, 7)
+  await updateLikes(firstBlog._id, firstBlog.user, 7)
+})
+
+test('cannot add blog witout token', async () => {
+  const newBlog = {
+    title: 'A blog that will not go through',
+    author: 'Unauthorized person',
+    url: 'http://uap.com/',
+    likes: 0
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
 })
 
 afterAll(() => {

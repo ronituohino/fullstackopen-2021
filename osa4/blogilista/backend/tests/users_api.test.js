@@ -3,10 +3,24 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 
-const User = require('../models/user')
+const user_hasher = require('../utils/user_hasher')
 
+const User = require('../models/user')
+const Blog = require('../models/blog')
 
 const users = require('./sample_users').users
+const blogs = require('./sample_blogs').blogs
+
+const tokenCreator = require('../utils/tokenCreator')
+const token = tokenCreator.createToken(users[0])
+
+beforeAll(async () => {
+  await Blog.deleteMany({})
+  await Blog.insertMany(blogs)
+
+  await User.deleteMany({})
+  await User.insertMany(user_hasher.transformUsers(users))
+})
 
 test('get users', async () => {
   const request = await api.get('/api/users')
@@ -15,10 +29,10 @@ test('get users', async () => {
 
 test('user creation', async () => {
   const newUser = {
-    username: 'poof',
-    password: 'paaf',
-
-    name: 'Roni'
+    username: 'uniquename',
+    password: 'hiddenpassword',
+    name: 'coolguy22',
+    blogs: [],
   }
 
   await api.post('/api/users')
