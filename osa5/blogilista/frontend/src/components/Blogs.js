@@ -1,6 +1,22 @@
+import React, { useEffect, useState } from 'react'
+
 import Notification from './Notification'
+import Togglable from './Togglable'
+
+import blogs from '../services/blogs'
 
 const Blogs = (props) => {
+  const [blogList, setBlogList] = useState(null)
+
+  const refreshBlogs = async () => {
+    const data = await blogs.getAllBlogs()
+    setBlogList(data)
+  }
+
+  useEffect(() => {
+    refreshBlogs()
+  }, [])
+  
     return (
       <>
         <h1>blogs</h1>
@@ -14,13 +30,19 @@ const Blogs = (props) => {
   
         <ul style={{listStyle: "square"}}>
         { 
-          props.blogs 
-            ? props.blogs.map(b => <li key={b.id}><Blog blog={b}/></li>) 
+          blogList
+            ? blogList.map(b => <li key={b.id}><Blog blog={b}/></li>) 
             : <p>no blogs</p> 
         }
         </ul>
   
-        <CreateBlog createBlog={props.createBlog}/>
+        <Togglable buttonLabel={'create'}>
+          <CreateBlog 
+            user={props.user}
+            refreshBlogs={refreshBlogs}
+            showNotification={props.showNotification}
+          />
+        </Togglable>
       </>
     )
   }
@@ -34,10 +56,33 @@ const Blogs = (props) => {
   }
   
   const CreateBlog = (props) => {
+
+    const createBlog = async (event) => {
+      event.preventDefault()
+  
+      try {
+        await blogs.createBlog(props.user, 
+          {
+            title: event.target[0].value,
+            author: event.target[1].value,
+            url: event.target[2].value,
+          })
+  
+        props.showNotification(
+          `a new blog ${event.target[0].value} by ${event.target[1].value} added`,
+          false)
+      } catch(exception) {
+        props.showNotification('error creating blog', true)
+      }
+  
+      document.getElementById('createBlogForm').reset()
+      props.refreshBlogs()
+    }
+
     return (
       <>
         <h2>create new</h2>
-        <form id='createBlogForm' onSubmit={props.createBlog}>
+        <form id='createBlogForm' onSubmit={createBlog}>
           <label>
             title:
             <input type='text' name='title'></input>
