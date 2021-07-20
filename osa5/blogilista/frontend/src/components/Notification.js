@@ -1,3 +1,5 @@
+import React from 'react'
+
 const Notification = (props) => {
   if(props.notification === null) {
     return ( <></> )
