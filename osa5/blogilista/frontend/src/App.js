@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 
 import Login from './components/login-page/Login'
 import Blogs from './components/blogs-page/Blogs'
 
-import login from "./services/login"
+import login from './services/login'
 import blogs from './services/blogs'
 
 const App = () => {
   const [user, setUser] = useState(null)
-  
+
   const [notification, setNotification] = useState(null)
 
   const loginSubmit = async (event) => {
@@ -25,7 +25,7 @@ const App = () => {
       window.localStorage.setItem('user', JSON.stringify(user))
     } catch(exception) {
       showNotification('wrong username or password', true)
-      document.getElementById("loginForm").reset()
+      document.getElementById('loginForm').reset()
     }
   }
 
@@ -37,10 +37,9 @@ const App = () => {
       setUser(user)
       blogs.setToken(user.token)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  
+
   const logOut = () => {
     window.localStorage.clear()
     setUser(null)
@@ -54,21 +53,21 @@ const App = () => {
   return (
     <div>
       {
-        user === null 
-          ? <Login 
-              loginSubmit={loginSubmit} 
-              notification={notification}
-            />
+        user === null
+          ? <Login
+            loginSubmit={loginSubmit}
+            notification={notification}
+          />
 
-          : <Blogs 
-              user={user} 
-              logOut={logOut} 
-              notification={notification}
-              showNotification={showNotification}
-            />
+          : <Blogs
+            user={user}
+            logOut={logOut}
+            notification={notification}
+            showNotification={showNotification}
+          />
       }
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
