@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import Login from './components/Login'
-import Blogs from './components/Blogs'
+import Login from './components/login-page/Login'
+import Blogs from './components/blogs-page/Blogs'
 
 import login from "./services/login"
 import blogs from './services/blogs'

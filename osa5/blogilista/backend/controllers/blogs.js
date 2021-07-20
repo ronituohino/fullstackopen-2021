@@ -42,7 +42,7 @@ blogsRouter.post('/', mw.tokenExtractor, mw.userExtractor,  (request, response, 
 })
 
 blogsRouter.delete('/:id', mw.tokenExtractor, mw.userExtractor, (request, response) => {
-  Blog.findById({ _id: request.params.id })
+  Blog.findByIdAndDelete({ _id: request.params.id })
     .then(blog => {
       if(blog.user.toString() === request.user.id.toString()) {
         response.status(204).end()
@@ -52,10 +52,12 @@ blogsRouter.delete('/:id', mw.tokenExtractor, mw.userExtractor, (request, respon
 
 blogsRouter.put('/:id', mw.tokenExtractor, mw.userExtractor, (request, response) => {
   const newBlog = {
+    _id: request.params.id,
     title: request.body.title,
     author: request.body.author,
     url: request.body.url,
     likes: request.body.likes,
+    user: request.user._id,
   }
 
   Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true })

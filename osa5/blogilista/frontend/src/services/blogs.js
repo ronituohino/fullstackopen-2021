@@ -12,13 +12,36 @@ const getAllBlogs = async () => {
     return response.data
 }
 
-const createBlog = async (user, blog) => {
+const createBlog = async (blog) => {
+    const config = {
+        headers: { Authorization: token }
+    }
+
+    console.log(blog)
+    const response = await axios
+        .post(baserUrl, blog, config)
+    return response.data
+}
+
+const likeBlog = async (blog) => {
     const config = {
         headers: { Authorization: token }
     }
 
     const response = await axios
-        .post(baserUrl, blog, config)
+        .put(`${baserUrl}/${blog.id}`, blog, config)
+
+    return response.data
+}
+
+const deleteBlog = async (id) => {
+    const config = {
+        headers: { Authorization: token }
+    }
+
+    const response = await axios
+        .delete(`${baserUrl}/${id}`, config)
+
     return response.data
 }
 
@@ -27,6 +50,8 @@ const exportedObject = {
     
     getAllBlogs,
     createBlog,
+    likeBlog,
+    deleteBlog,
 }
 
 export default exportedObject
