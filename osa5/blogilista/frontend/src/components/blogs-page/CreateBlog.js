@@ -1,52 +1,27 @@
 import React from 'react'
-import blogs from '../../services/blogs'
 
 const CreateBlog = (props) => {
-
-  const createBlog = async (event) => {
-    event.preventDefault()
-
-    try {
-      await blogs.createBlog(
-        {
-          title: event.target[0].value,
-          author: event.target[1].value,
-          url: event.target[2].value,
-        })
-
-      props.showNotification(
-        `a new blog ${event.target[0].value} by ${event.target[1].value} added`,
-        false)
-    } catch(exception) {
-      props.showNotification('error creating blog', true)
-    }
-
-    props.toggle.current.toggleVisibility()
-    document.getElementById('createBlogForm').reset()
-    props.refreshBlogs()
-  }
-
   return (
     <>
       <h2>create new</h2>
-      <form id='createBlogForm' onSubmit={createBlog}>
+      <form id='createBlogForm' onSubmit={props.createBlog}>
         <label>
             title:
-          <input type='text' name='title'></input>
+          <input type='text' name='title' id='title'></input>
         </label>
 
         <br></br>
 
         <label>
             author:
-          <input type='text' name='author'></input>
+          <input type='text' name='author' id='author'></input>
         </label>
 
         <br></br>
 
         <label>
             url:
-          <input type='text' name='url'></input>
+          <input type='text' name='url' id='url'></input>
         </label>
 
         <br></br>
