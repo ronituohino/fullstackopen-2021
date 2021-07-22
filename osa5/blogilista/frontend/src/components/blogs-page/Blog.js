@@ -39,21 +39,27 @@ const Blog = (props) => {
         visible
           ?
           <div className='blog'>
-            <p>{props.blog.title} | {props.blog.author}
+            <p id='blogTitle'>{props.blog.title} | {props.blog.author}
               <button onClick={toggleVisibility}>hide</button>
             </p>
 
             <p>{props.blog.url}</p>
 
             <p>likes {props.blog.likes}
-              <button onClick={() => props.likeBlog(props.blog)}>like</button>
+              <button 
+                onClick={() => props.likeBlog(props.blog)} 
+                id='blogLikeButton'>like
+              </button>
             </p>
 
             <p>{props.blog.author}</p>
 
             {
               isByUser()
-                ? <button onClick={deleteBlog}>remove</button>
+                ? <button 
+                    onClick={deleteBlog}
+                    id='blogRemoveButton'>remove
+                  </button>
                 : <></>
             }
 
@@ -62,7 +68,10 @@ const Blog = (props) => {
           :
           <div className='blog'>
             <p>{props.blog.title} | {props.blog.author}
-              <button onClick={toggleVisibility}>view</button>
+              <button 
+                onClick={toggleVisibility} 
+                id='blogViewButton'>view
+              </button>
             </p>
           </div>
 

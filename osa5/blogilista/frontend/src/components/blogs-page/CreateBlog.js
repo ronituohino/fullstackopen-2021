@@ -26,7 +26,7 @@ const CreateBlog = (props) => {
 
         <br></br>
 
-        <button formAction='submit'>create</button>
+        <button formAction='submit' id='createNewBlogButton'>create</button>
       </form>
     </>
   )

@@ -20,19 +20,15 @@ usersRouter.post('/', (request, response, next) => {
   }
 
   const hashedUser = user_hasher.transformUser(request.body)
+  hashedUser['blogs'] = []
 
-  Blog.findOne({})
-    .then(response => {
-      hashedUser['blogs'] = [ response._id ]
+  const user = new User(hashedUser)
+
+  user.save()
+    .then(savedUser => {
+      response.status(201).json(savedUser)
     })
-    .then(() => {
-      const user = new User(hashedUser)
-      user.save()
-        .then(savedUser => {
-          response.status(201).json(savedUser)
-        })
-        .catch(error => next(error))
-    })
+    .catch(error => next(error))
 })
 
 module.exports = usersRouter

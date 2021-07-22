@@ -13,7 +13,7 @@ const Notification = (props) => {
 
     return (
       <>
-        <h3 style={style}>{props.notification.message}</h3>
+        <h3 className='error' style={style}>{props.notification.message}</h3>
       </>
     )
   }

@@ -75,7 +75,11 @@ const Blogs = (props) => {
 
       <br></br>
 
-      <Togglable buttonLabel={'create new blog'} ref={createBlogToggle}>
+      <Togglable 
+        buttonLabel={'create new blog'} 
+        ref={createBlogToggle}
+        inActiveButtonId={'showCreateNewBlogButton'}
+        activeButtonId={'cancelNewBlogButton'}>
         <CreateBlog
           createBlog={createBlog}
         />
