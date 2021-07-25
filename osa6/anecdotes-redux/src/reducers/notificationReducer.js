@@ -1,3 +1,5 @@
+let notificationTimeOutId
+
 export const showNotification = (message, timeToShow) => {
   return async dispatch => {
     dispatch({
@@ -5,7 +7,9 @@ export const showNotification = (message, timeToShow) => {
       message: message,
     })
 
-    await setTimeout(() => {
+    clearTimeout(notificationTimeOutId)
+
+    notificationTimeOutId = await setTimeout(() => {
       dispatch({
         type: 'HIDE'
       })
