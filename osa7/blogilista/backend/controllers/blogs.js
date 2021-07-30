@@ -3,6 +3,7 @@ const blogsRouter = require('express').Router()
 const mw = require('../utils/middleware')
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 blogsRouter.get('/', (request, response, next) => {
   Blog
@@ -34,26 +35,28 @@ blogsRouter.post('/', mw.tokenExtractor, mw.userExtractor, async (request, respo
   const blog = new Blog(request.body)
 
   const saved = await blog.save()
+  await User.findByIdAndUpdate(request.user, { blogs: [...request.user.blogs, saved._id]}, { new: true })
+
   const populated = await saved.populate('user').execPopulate()
 
   response.status(201).json(populated)
 })
 
-blogsRouter.delete('/:id', mw.tokenExtractor, mw.userExtractor, (request, response, next) => {
-  Blog.findById(request.params.id)
-    .then(blog => {
-      if(blog.user.toString() === request.user._id.toString()) {
-        Blog.findByIdAndDelete({ _id: request.params.id })
-          .then(() => {
-            response.status(204).end()
-          })
-          .catch(err => next(err))
-      } else {
-        console.log(blog.user, request.user._id)
-        response.status(401).end()
-      }
-    })
-    .catch(err => next(err))
+blogsRouter.delete('/:id', mw.tokenExtractor, mw.userExtractor, async (request, response, next) => {
+  const blog = await Blog.findById(request.params.id)
+
+  if(blog.user.toString() === request.user._id.toString()) {
+    await Blog.findByIdAndDelete({ _id: request.params.id })
+    const index = request.user.blogs.findIndex(b => b._id === request.params.id)
+    request.user.blogs.splice(index, 1)
+
+    await User.findByIdAndUpdate(request.user, { blogs: request.user.blogs})
+    response.status(204).end()
+  } else {
+    console.log(blog.user, request.user._id)
+    response.status(401).end()
+  }
+      
 })
 
 blogsRouter.put('/:id', mw.tokenExtractor, mw.userExtractor, async (request, response) => {

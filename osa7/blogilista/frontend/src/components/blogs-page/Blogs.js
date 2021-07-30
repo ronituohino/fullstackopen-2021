@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react'
 
-import Notification from '../Notification'
 import Togglable from '../Togglable'
 import CreateBlog from './CreateBlog'
+import Header from '../Header'
 
 import Blog from './Blog'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { refreshBlogs } from '../../reducers/blogReducer'
-import { logout } from '../../reducers/userReducer'
 
-const Blogs = (props) => {
+
+
+const Blogs = () => {
   const blogList = useSelector(store => store.blogs)
-  const user = useSelector(store => store.user)
 
   const dispatch = useDispatch()
 
@@ -24,14 +24,7 @@ const Blogs = (props) => {
 
   return (
     <>
-      <h1>blogs</h1>
-
-      <Notification />
-
-      <p>
-        {user.username} logged in
-        <button onClick={() => dispatch(logout())}>logout</button>
-      </p>
+      <Header />
 
       <br></br>
 

@@ -1,15 +1,20 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
 import Notification from '../Notification'
 
-const Login = (props) => {
+import { useDispatch } from 'react-redux'
+import { userLogin } from '../../reducers/userReducer'
+import { setNotification } from '../../reducers/notificationReducer'
+
+
+
+const Login = () => {
   const dispatch = useDispatch()
 
   const loginSubmit = async (event) => {
     event.preventDefault()
 
-    const username = event.target[0].value
-    const password = event.target[1].value
+    const username = event.target.username.value
+    const password = event.target.password.value
 
     try {
       dispatch(userLogin(username, password))
@@ -25,7 +30,7 @@ const Login = (props) => {
 
       <Notification />
 
-      <form id="loginForm" onSubmit={() => loginSubmit()}>
+      <form id="loginForm" onSubmit={loginSubmit}>
         <label>
             username
           <input type="text" name="username" id="usernameInput"></input>
