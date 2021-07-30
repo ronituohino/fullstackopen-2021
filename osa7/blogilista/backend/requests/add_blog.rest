@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvbyIsImlkIjoiNjBmMDY4MmEyMTcxNGMyMjJjZjExMDZlIiwiaWF0IjoxNjI2NjE0NjYyfQ.wqYZC89hzS4KNopxhKF_5WT9rA4x2p2rOoNBWyW7qzo
+
+{ 
+    "title":"On Tokens",
+    "author":"LSAS",
+    "url":"-",
+    "likes":"2"
+}
