@@ -32,10 +32,15 @@ blogsRouter.post('/', mw.tokenExtractor, mw.userExtractor, async (request, respo
     request.body['likes'] = 0
   }
 
+  if(!properties.includes('comments'))
+  {
+    request.body['comments'] = []
+  }
+
   const blog = new Blog(request.body)
 
   const saved = await blog.save()
-  await User.findByIdAndUpdate(request.user, { blogs: [...request.user.blogs, saved._id]}, { new: true })
+  await User.findByIdAndUpdate(request.user, { blogs: [...request.user.blogs, saved._id] }, { new: true })
 
   const populated = await saved.populate('user').execPopulate()
 
@@ -56,7 +61,6 @@ blogsRouter.delete('/:id', mw.tokenExtractor, mw.userExtractor, async (request, 
     console.log(blog.user, request.user._id)
     response.status(401).end()
   }
-      
 })
 
 blogsRouter.put('/:id', mw.tokenExtractor, mw.userExtractor, async (request, response) => {
@@ -72,6 +76,23 @@ blogsRouter.put('/:id', mw.tokenExtractor, mw.userExtractor, async (request, res
   const updated = await Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true })
   const populated = await updated.populate('user').execPopulate()
 
+  response.json(populated)
+})
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+
+  const newBlog = {
+    ...blog.body,
+    comments: blog.comments.concat(request.body.comment)
+  }
+
+  console.log('com', newBlog)
+
+  const updated = await Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true })
+
+  console.log(updated)
+  const populated = await updated.populate('user').execPopulate()
   response.json(populated)
 })
 

@@ -3,7 +3,7 @@ import Header from '../Header'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { likeBlog } from '../../reducers/blogReducer'
+import { likeBlog, commentBlog } from '../../reducers/blogReducer'
 
 const SingleBlog = () => {
   const dispatch = useDispatch()
@@ -26,6 +26,10 @@ const SingleBlog = () => {
     }))
   }
 
+  const addComment = () => {
+    dispatch(commentBlog(id, document.getElementById('commentField').value))
+  }
+
   return (
     <>
       <Header />
@@ -41,6 +45,17 @@ const SingleBlog = () => {
        
       </p>
       <p>added by {blog.author}</p>
+
+      <h3>comments</h3>
+
+      <input id='commentField'/>
+      <button onClick={addComment}>add comment</button>
+
+      <ul>
+      {
+        blog.comments.map(c => <li key={c}>{c}</li>)
+      }
+      </ul>
     </>
   )
 }

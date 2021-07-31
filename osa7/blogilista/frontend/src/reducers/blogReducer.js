@@ -4,20 +4,31 @@ const blogReducer = (state = [], action) => {
   switch (action.type) {
   case 'REFRESH':
     return action.data
+
   case 'CREATE':
     return [...state, action.data]
+
   case 'DELETE':
     const delIndex = state.findIndex(b => b.id === action.data)
     let removedCopy = [...state]
     removedCopy.splice(delIndex, 1)
 
     return removedCopy
-  case 'LIKE':
-    const index = state.findIndex(b => b.id === action.data.id)
-    let copy = [...state]
-    copy[index] = action.data
 
-    return copy
+  case 'LIKE':
+    const likedIndex = state.findIndex(b => b.id === action.data.id)
+    let likedCopy = [...state]
+    likedCopy[likedIndex] = action.data
+
+    return likedCopy
+
+  case 'COMMENT':
+    const commentedIndex = state.findIndex(b => b.id === action.data.id)
+    let commentedCopy = [...state]
+    commentedCopy[commentedIndex] = action.data
+
+    return commentedCopy
+
   default:
     return state
   }
@@ -62,6 +73,17 @@ export const likeBlog = (blog) => {
 
     dispatch({
       type: 'LIKE',
+      data: response
+    })
+  }
+}
+
+export const commentBlog = (id, comment) => {
+  return async dispatch => {
+    const response = await blogs.commentBlog(id, comment)
+
+    dispatch({
+      type: 'COMMENT',
       data: response
     })
   }
