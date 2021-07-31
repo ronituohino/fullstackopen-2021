@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../reducers/userReducer'
 import { useHistory, Link } from 'react-router-dom'
 
+import { Navbar, Nav, Button } from 'react-bootstrap'
+
 const Header = () => {
   const user = useSelector((store) => store.user)
   const dispatch = useDispatch()
@@ -13,46 +15,39 @@ const Header = () => {
     history.push('/login')
   }
 
-  const headerStyle = {
-    margin: 0,
-    padding: 0,
-    display: 'flex',
-    backgroundColor: '#bcbcbc',
-    alignItems: 'baseline'
-  }
-
-  const navBarItemStyle = {
-    padding: 5,
-  }
-
   return (
     <>
-      <div style={headerStyle}>
-        <Link to="/blogs" style={navBarItemStyle}>
-          <p>blogs</p>
-        </Link>
+      <Navbar bg="dark" expand="lg">
+        <Nav>
+        <Link to="/blogs">
+            <p>Blogs</p>
+          </Link>
 
-        <Link to="/users" style={navBarItemStyle}>
-          <p>users</p>
-        </Link>
+          <Link to="/users">
+            <p>Users</p>
+          </Link>
 
-        {user ? (
-          <>
-            <p style={navBarItemStyle}>{user.username} logged in</p>
-            <button onClick={() => dispatch(logout())} style={navBarItemStyle}>
-              logout
-            </button>
-          </>
-        ) : (
-          <>
-            <button onClick={goToLogin} style={navBarItemStyle}>
-              login
-            </button>
-          </>
-        )}
-      </div>
+        </Nav>
+          
+          {user ? (
+            <>
+              <p>{user.username} logged in</p>
+              <Button
+                onClick={() => dispatch(logout())}
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={goToLogin}>
+                Login
+              </Button>
+            </>
+          )}
+      </Navbar>
 
-      <h1>blog app</h1>
+      <h1>Blog app</h1>
 
       <Notification />
     </>

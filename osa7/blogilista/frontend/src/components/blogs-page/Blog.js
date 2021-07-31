@@ -4,20 +4,12 @@ import blogs from '../../services/blogs'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteBlog, likeBlog } from '../../reducers/blogReducer'
 import { Link } from 'react-router-dom'
+import { ListGround, ListGroup } from 'react-bootstrap'
 
 const Blog = (props) => {
   const dispatch = useDispatch()
-
+  const [hovered, setHovered] = useState(false)
   const user = useSelector((store) => store.user)
-
-  const blogStyle = {
-    paddingTop: 0,
-    paddingLeft: 5,
-    border: 'solid',
-    borderWidth: 3,
-    marginTop: 3,
-    marginBottom: 3,
-  }
 
   const isByUser = () => {
     return (
@@ -47,17 +39,20 @@ const Blog = (props) => {
   }
 
   return (
-    <div style={blogStyle}>
-      {
-        <div className="blog">
-          <Link to={`/blogs/${props.blog.id}`}>
-            <p>
-              {props.blog.title} | {props.blog.author}
-            </p>
-          </Link>
-        </div>
-      }
-    </div>
+    <Link to={`/blogs/${props.blog.id}`}>
+      <ListGroup
+        horizontal='xxl'
+        style={{margin: 5}}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <ListGroup.Item active={hovered}>
+          <h3>{props.blog.title}</h3>
+        </ListGroup.Item>
+
+        <ListGroup.Item active={hovered}>{props.blog.author}</ListGroup.Item>
+      </ListGroup>
+    </Link>
   )
 }
 

@@ -7,12 +7,17 @@ import Header from '../Header'
 import Blog from './Blog'
 
 import { useSelector, useDispatch } from 'react-redux'
+import { ListGroup } from 'react-bootstrap'
 
 const Blogs = () => {
   const blogList = useSelector((store) => store.blogs)
   const user = useSelector((store) => store.user)
 
   const createBlogToggle = useRef()
+
+  const blogListStyle = {
+    padding: 5,
+  }
 
   return (
     <>
@@ -22,7 +27,7 @@ const Blogs = () => {
 
       {user ? (
         <Togglable
-          buttonLabel={'create new blog'}
+          buttonLabel={'Create new blog'}
           ref={createBlogToggle}
           inActiveButtonId={'showCreateNewBlogButton'}
           activeButtonId={'cancelNewBlogButton'}

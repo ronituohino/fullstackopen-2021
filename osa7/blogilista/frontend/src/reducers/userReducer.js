@@ -1,6 +1,8 @@
 import login from '../services/login'
 import blogs from '../services/blogs'
 
+import notificationReducer, { setNotification } from './notificationReducer'
+
 const initialState = null
 
 const userReducer = (state = initialState, action) => {
@@ -15,32 +17,36 @@ const userReducer = (state = initialState, action) => {
 }
 
 export const userLogin = (username, password) => {
-  return async dispatch => {
-    const user = await login.login(username, password)
-    
-    dispatch({
-      type: 'LOGIN',
-      data: user
-    })
+  return async (dispatch) => {
+    try {
+      const user = await login.login(username, password)
 
-    blogs.setToken(user.token)
-    window.localStorage.setItem('user', JSON.stringify(user))
+      dispatch({
+        type: 'LOGIN',
+        data: user,
+      })
+
+      blogs.setToken(user.token)
+      window.localStorage.setItem('user', JSON.stringify(user))
+    } catch (err) {
+      dispatch(setNotification('incorrect username or password', true))
+    }
   }
 }
 
 export const setUser = (user) => {
-  return async dispatch => {
+  return async (dispatch) => {
     blogs.setToken(user.token)
 
     dispatch({
       type: 'LOGIN',
-      data: user
+      data: user,
     })
   }
 }
 
 export const logout = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     window.localStorage.clear()
 
     dispatch({

@@ -42,7 +42,7 @@ const App = () => {
   }, [])
 
   return (
-    <div>
+    <div className='container'>
       <Switch>
         <Route path='/login'>
           {user === null ? <Login /> : <Redirect to='/blogs'/>}
