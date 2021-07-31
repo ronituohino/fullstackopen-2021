@@ -42,7 +42,6 @@ export const setUser = (user) => {
 export const logout = () => {
   return async dispatch => {
     window.localStorage.clear()
-    console.log('?')
 
     dispatch({
       type: 'LOGOUT',
