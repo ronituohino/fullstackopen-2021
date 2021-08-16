@@ -1,4 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server')
+const { v1: uuid } = require('uuid')
 
 let authors = [
   {
@@ -84,39 +85,109 @@ let books = [
 ]
 
 const typeDefs = gql`
+  type Author {
+    name: String
+    id: ID!
+    born: Int
+    bookCount: Int!
+  }
+
   type Book {
-      title: String!
-      published: Int!
-      author: String!
-      id: ID!
-      genres: [String!]!
+    title: String!
+    published: Int!
+    author: String!
+    id: ID!
+    genres: [String!]!
   }
 
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks: [Book!]!
+    allBooks(author: String, genre: String): [Book]
+    allAuthors: [Author!]!
+  }
+
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int
+      genres: [String!]
+    ): Book
+
+    editAuthor(name: String!, setBornTo: Int!): Author
   }
 `
 
 const resolvers = {
   Query: {
     bookCount: () => books.length,
-    authorCount: () => {
-      let authors = []
-      books.forEach((b) => {
-        if (!authors.includes(b.author)) {
-          authors.push(b.author)
-        }
-      })
+    authorCount: () => authors.length,
 
-      return authors.length
+    allBooks: (root, args) => {
+      let filtered = books
+
+      if (args.author) {
+        filtered = books.filter((b) => b.author === args.author)
+      }
+
+      if (args.genre) {
+        filtered = books.filter((b) => b.genres.includes(args.genre))
+      }
+
+      return filtered
     },
 
-    allBooks: () => books
-    allAuthors: () => {
+    allAuthors: () => authors,
+  },
 
-    }
+  Mutation: {
+    addBook: (root, args) => {
+      const book = { ...args, id: uuid() }
+      books = books.concat(book)
+
+      const containsAuthor = authors.some((a) => a.name === book.author)
+      if (!containsAuthor) {
+        authors = authors.concat({
+          name: book.author,
+          id: uuid(),
+        })
+      }
+
+      return book
+    },
+
+    editAuthor: (root, args) => {
+      const index = authors.findIndex((a) => a.name === args.name)
+
+      if (index) {
+        const author = authors[index]
+        const newAuthor = { ...author, born: args.setBornTo }
+        authors[index] = newAuthor
+        return newAuthor
+      }
+      return null
+    },
+  },
+
+  Book: {
+    title: (root) => root.title,
+    published: (root) => root.published,
+    author: (root) => root.author,
+    id: (root) => root.id,
+    genres: (root) => root.genres,
+  },
+
+  Author: {
+    name: (root) => root.name,
+    bookCount: (root) => {
+      return books.reduce((acc, value) => {
+        if (value.author === root.name) {
+          return acc + 1
+        }
+        return acc
+      }, 0)
+    },
   },
 }
 
