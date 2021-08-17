@@ -180,6 +180,7 @@ const resolvers = {
 
   Author: {
     name: (root) => root.name,
+    born: (root) => root.born,
     bookCount: (root) => {
       return books.reduce((acc, value) => {
         if (value.author === root.name) {
