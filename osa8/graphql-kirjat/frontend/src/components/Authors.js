@@ -9,11 +9,10 @@ const Authors = (props) => {
   const [authors, setAuthors] = useState([])
 
   useEffect(() => {
-    if(result.data) {
+    if (result.data) {
       setAuthors(result.data.allAuthors)
     }
   }, [result])
-  
 
   if (!props.show) {
     return null
@@ -26,26 +25,20 @@ const Authors = (props) => {
         <tbody>
           <tr>
             <th></th>
-            <th>
-              born
-            </th>
-            <th>
-              books
-            </th>
+            <th>born</th>
+            <th>books</th>
           </tr>
-          {authors.map(a =>
+          {authors.map((a) => (
             <tr key={a.name}>
               <td>{a.name}</td>
               <td>{a.born}</td>
               <td>{a.bookCount}</td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
 
-      <SetBirth 
-        authors={authors}      
-      />
+      {props.token ? <SetBirth authors={authors} /> : <></>}
     </div>
   )
 }

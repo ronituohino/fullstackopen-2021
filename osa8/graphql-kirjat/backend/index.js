@@ -84,7 +84,13 @@ const resolvers = {
     bookCount: () => Book.collection.length,
     authorCount: () => Author.collection.length,
 
-    allBooks: (root, args) => Book.find({ genres: { $in: args.genre } }),
+    allBooks: async (root, args) => {
+      if(Object.keys(args).length === 0) {
+        return Book.find({})
+      }
+
+      return Book.find({ genres: { $in: args.genre } })
+    },
 
     allAuthors: () => Author.find({}),
     me: (root, args, context) => context.currentUser,
