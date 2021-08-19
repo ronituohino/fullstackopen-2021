@@ -1,4 +1,6 @@
 const { ApolloServer, UserInputError, gql } = require('apollo-server')
+const { PubSub } = require('apollo-server')
+const pubsub = new PubSub()
 
 require('dotenv').config()
 const mongoose = require('mongoose')
@@ -38,13 +40,6 @@ const typeDefs = gql`
     value: String!
   }
 
-  type Person {
-    name: String!
-    phone: String
-    address: Address!
-    id: ID!
-  }
-
   type Address {
     street: String!
     city: String!
@@ -53,6 +48,14 @@ const typeDefs = gql`
   enum YesNo {
     YES
     NO
+  }
+
+  type Person {
+    name: String!
+    phone: String
+    address: Address!
+    friendOf: [User!]!
+    id: ID!
   }
 
   type Query {
@@ -76,14 +79,24 @@ const typeDefs = gql`
 
     addAsFriend(name: String!): User
   }
+
+  type Subscription {
+    personAdded: Person!
+  }
 `
 
 const resolvers = {
   Query: {
     personCount: () => Person.collection.countDocuments(),
     allPersons: (root, args) => {
-      // filters missing
-      return Person.find({})
+      console.log('Person.find')
+      if (!args.phone) {
+        return Person.find({}).populate('friendOf')
+      }
+
+      return Person.find({ phone: { $exists: args.phone === 'YES' } }).populate(
+        'friendOf'
+      )
     },
     findPerson: (root, args) => Person.findOne({ name: args.name }),
     me: (root, args, context) => {
@@ -115,6 +128,7 @@ const resolvers = {
         })
       }
 
+      pubsub.publish('PERSON_ADDED', { personAdded: person })
       return person
     },
 
@@ -176,6 +190,12 @@ const resolvers = {
       return { value: jwt.sign(userForToken, JWT_SECRET) }
     },
   },
+
+  Subscription: {
+    personAdded: {
+      subscribe: () => pubsub.asyncIterator(['PERSON_ADDED']),
+    },
+  },
 }
 
 const server = new ApolloServer({
@@ -193,6 +213,7 @@ const server = new ApolloServer({
   },
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })

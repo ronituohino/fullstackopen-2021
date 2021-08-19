@@ -4,9 +4,18 @@ const {
   UserInputError,
   AuthenticationError,
 } = require('apollo-server')
+const app = require('express')
+
+ 
+const execute = require('graphql').execute
+const subscribe = require('graphql').subscribe
+
+const SubscriptionServer = require('subscriptions-transport-ws') 
+const makeExecutableSchema = require('@graphql-tools/schema') 
+
+const httpServer = require('http').createServer(app)
 
 const jwt = require('jsonwebtoken')
-
 require('dotenv').config()
 
 const mongoose = require('mongoose')
@@ -77,6 +86,10 @@ const typeDefs = gql`
     createUser(username: String!, favoriteGenre: String!): User
     login(username: String!, password: String!): Token
   }
+
+  type Subscription {
+    bookAdded: Book!
+  }
 `
 
 const resolvers = {
@@ -85,7 +98,7 @@ const resolvers = {
     authorCount: () => Author.collection.length,
 
     allBooks: async (root, args) => {
-      if(Object.keys(args).length === 0) {
+      if (Object.keys(args).length === 0) {
         return Book.find({})
       }
 
@@ -116,7 +129,10 @@ const resolvers = {
 
       try {
         const book = new Book({ ...args, author: author._id })
-        return book.save()
+        const addedBook = await book.save()
+
+        pubsub.publish('BOOK_ADDED', { bookAdded: addedBook })
+        return addedBook
       } catch (error) {
         throw new UserInputError(error.message, {
           invalidArgs: args,
@@ -168,6 +184,12 @@ const resolvers = {
     },
   },
 
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
+    },
+  },
+
   Book: {
     title: (root) => root.title,
     published: (root) => root.published,
@@ -192,9 +214,10 @@ const resolvers = {
   },
 }
 
+const schema = makeExecutableSchema({ typeDefs, resolvers })
+
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema,
   context: async ({ req }) => {
     const auth = req ? req.headers.authorization : null
     if (auth && auth.toLowerCase().startsWith('bearer ')) {
@@ -205,6 +228,25 @@ const server = new ApolloServer({
   },
 })
 
-server.listen().then(({ url }) => {
+server.start()
+server.applyMiddleware({ app })
+
+const subscriptionServer = SubscriptionServer.create({
+  schema,
+  execute,
+  subscribe,
+}, {
+  server: httpServer,
+  path: server.graphqlPath,
+})
+
+const PORT = 4000
+
+['SIGINT', 'SIGTERM'].forEach(signal => {
+  process.on(signal, () => subscriptionServer.close());
+});
+
+httpServer.listen(PORT).then(({ url, subsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subsUrl}`)
 })
