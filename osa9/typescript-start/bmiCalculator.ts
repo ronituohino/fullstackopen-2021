@@ -34,5 +34,5 @@ const parseInputBmi = (args: Array<string>): parsedArgsBmi => {
 try {
   console.log(calculateBmi(parseInputBmi(process.argv)));
 } catch (e) {
-  console.log('Something went wrong: ', e.message);
+  console.log('Something went wrong: ', e.message); //eslint-disable-line
 }

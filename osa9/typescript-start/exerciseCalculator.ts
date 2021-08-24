@@ -1,5 +1,3 @@
-const targetDailyHours = [2, 2, 0, 2, 2, 0, 0];
-
 const averageOfArr = (arr: Array<number>): number => {
   return arr.reduce((acc, cv) => acc + cv, 0) / arr.length;
 };
@@ -30,10 +28,9 @@ interface ExerciseStatistics {
   average: number;
 }
 
-const calculateExercises = (
-  exerciseHoursPerDay: Array<number>
+export const calculateExercises = (
+  exerciseHoursPerDay: Array<number>, target = 1.5
 ): ExerciseStatistics => {
-  const target = averageOfArr(targetDailyHours);
   const average = averageOfArr(exerciseHoursPerDay);
   const [rating, ratingDescription] = getRating(average, target);
 
@@ -49,7 +46,7 @@ const calculateExercises = (
 };
 
 const parseInputExercise = (args: Array<string>): Array<number> => {
-  let exerciseHoursPerDay: Array<number> = [];
+  const exerciseHoursPerDay: Array<number> = [];
 
   for (let i = 2; i < args.length; i++) {
     if (!isNaN(Number(args[i]))) {
@@ -65,5 +62,5 @@ const parseInputExercise = (args: Array<string>): Array<number> => {
 try {
   console.log(calculateExercises(parseInputExercise(process.argv)));
 } catch (e) {
-  console.log('Something went wrong: ', e.message);
+  console.log('Something went wrong: ', e.message); //eslint-disable-line
 }
