@@ -4,11 +4,16 @@ import { useParams } from "react-router-dom";
 import { Header, Icon } from "semantic-ui-react";
 import { apiBaseUrl } from "../constants";
 import { updatePatient, useStateValue } from "../state";
-import { Patient } from "../types";
+import { Entry, Patient } from "../types";
+import { assertNever } from "../utils";
+
+import HealthCheckComponent from "./HealthCheckComponent";
+import HospitalComponent from "./HospitalComponent";
+import OccupationalHealthcareComponent from "./OccupationalHealthcareComponent";
 
 const IndividualPatientInfo = () => {
   const { id } = useParams<{ id: string }>();
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients, diagnoses }, dispatch] = useStateValue();
 
   const patient = patients[id];
 
@@ -24,7 +29,7 @@ const IndividualPatientInfo = () => {
   };
 
   const needToFetchInfo = (): boolean => {
-    if (!patient.ssn) {
+    if (!patient.ssn || !patient.entries) {
       return true;
     } else {
       return false;
@@ -32,10 +37,14 @@ const IndividualPatientInfo = () => {
   };
 
   useEffect(() => {
-    if (needToFetchInfo()) {
+    if (patient && needToFetchInfo()) {
       void fetchAllPatientInfo();
     }
-  }, [id]);
+  }, [patient]);
+
+  if (!patient || Object.keys(diagnoses).length < 1) {
+    return <></>;
+  }
 
   const iconName = (): string => {
     switch (patient.gender) {
@@ -49,6 +58,24 @@ const IndividualPatientInfo = () => {
   };
   const iconString = iconName();
 
+  const EntryDetails = (entry: Entry): JSX.Element => {
+    switch (entry.type) {
+      case "HealthCheck":
+        return <HealthCheckComponent entry={entry} diagnoses={diagnoses} />;
+      case "OccupationalHealthcare":
+        return (
+          <OccupationalHealthcareComponent
+            entry={entry}
+            diagnoses={diagnoses}
+          />
+        );
+      case "Hospital":
+        return <HospitalComponent entry={entry} diagnoses={diagnoses} />;
+      default:
+        return assertNever(entry);
+    }
+  };
+
   return (
     <>
       <Header>
@@ -57,6 +84,10 @@ const IndividualPatientInfo = () => {
       </Header>
       <p>ssn: {patient.ssn}</p>
       <p>occupation: {patient.occupation}</p>
+
+      <Header size="medium">entries</Header>
+
+      {patient.entries.map((e) => EntryDetails(e))}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from '../types';
+import { NewPatient, Gender, Entry } from "../types";
 
 type RequestFieds = {
   name: unknown;
@@ -27,7 +27,7 @@ export const toNewPatient = ({
 };
 
 const isString = (text: unknown): text is string => {
-  return typeof text === 'string' || text instanceof String;
+  return typeof text === "string" || text instanceof String;
 };
 
 const parseName = (name: unknown): string => {
@@ -93,8 +93,30 @@ const parseGender = (gender: unknown): Gender => {
 
 const parseOccupation = (occupation: unknown): string => {
   if (!occupation || !isString(occupation)) {
-    throw new Error(`Incorrect or missing occupation ${occupation}`);
+    throw new Error(`Incorrect or missing occupation: ${occupation}`);
   }
 
   return occupation;
+};
+
+const isEntry = (entry: any): entry is Entry => {
+  if (entry.type) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const parseEntries = (entries: unknown): Entry[] => {
+  if (!entries || !Array.isArray(entries)) {
+    throw new Error(`Incorrect or missing entries: ${entries}`);
+  }
+
+  entries.forEach((e) => {
+    if (!isEntry(e)) {
+      throw new Error(`Entry missing type: ${e}`);
+    }
+  });
+
+  return entries;
 };
