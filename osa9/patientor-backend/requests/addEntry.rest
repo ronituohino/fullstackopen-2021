@@ -1,0 +1,14 @@
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "date": "2006-1-3",
+  "type": "Hospital",
+  "specialist": "Dr. Tuohino",
+  "diagnosisCodes": ["S62.1"],
+  "description": "I'm actually not a doctor idk what's wrong with him",
+  "discharge": { 
+      "date": "2022-01-02",
+      "criteria": "When he feels like it"
+  }
+}
