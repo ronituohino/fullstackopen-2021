@@ -6,6 +6,7 @@ import { apiBaseUrl } from "../constants";
 import { updatePatient, useStateValue } from "../state";
 import { Entry, Patient } from "../types";
 import { assertNever } from "../utils";
+import AddEntryModal from "./AddEntryModal";
 
 import HealthCheckComponent from "./HealthCheckComponent";
 import HospitalComponent from "./HospitalComponent";
@@ -61,16 +62,29 @@ const IndividualPatientInfo = () => {
   const EntryDetails = (entry: Entry): JSX.Element => {
     switch (entry.type) {
       case "HealthCheck":
-        return <HealthCheckComponent entry={entry} diagnoses={diagnoses} />;
+        return (
+          <HealthCheckComponent
+            key={entry.id}
+            entry={entry}
+            diagnoses={diagnoses}
+          />
+        );
       case "OccupationalHealthcare":
         return (
           <OccupationalHealthcareComponent
+            key={entry.id}
             entry={entry}
             diagnoses={diagnoses}
           />
         );
       case "Hospital":
-        return <HospitalComponent entry={entry} diagnoses={diagnoses} />;
+        return (
+          <HospitalComponent
+            key={entry.id}
+            entry={entry}
+            diagnoses={diagnoses}
+          />
+        );
       default:
         return assertNever(entry);
     }
@@ -85,7 +99,9 @@ const IndividualPatientInfo = () => {
       <p>ssn: {patient.ssn}</p>
       <p>occupation: {patient.occupation}</p>
 
-      <Header size="medium">entries</Header>
+      <Header size="medium">Entries</Header>
+
+      <AddEntryModal id={id} />
 
       {patient.entries.map((e) => EntryDetails(e))}
     </>

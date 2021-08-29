@@ -154,7 +154,7 @@ const hasId = (entry: any): entry is Entry => {
 };
 
 const isHealthRating = (rating: any): rating is HealthCheckRating => {
-  return !isNaN(rating) && rating >= 0 && rating <= 3;
+  return !isString(rating) && !isNaN(rating) && rating >= 0 && rating <= 3;
 };
 
 const parseHealthRating = (rating: unknown): HealthCheckRating => {

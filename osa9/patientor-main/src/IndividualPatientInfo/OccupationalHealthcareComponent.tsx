@@ -36,9 +36,8 @@ const OccupationalHealthcareComponent = ({
         {entry.sickLeave ? (
           <>
             <p>
-              <p>
-                <b>Sick leave granted.</b>
-              </p>
+              <b>Sick leave granted.</b>
+              <br></br>
               Start: {entry.sickLeave.startDate}
               <br></br>
               End: {entry.sickLeave.endDate}

@@ -29,10 +29,9 @@ const HospitalComponent = ({
       <Divider />
       <p>
         <b>Hospitalized</b>
-        <p>
-          Discharge on <b>{entry.discharge.date}</b> if{" "}
-          <b>{entry.discharge.criteria.toLowerCase()}</b>
-        </p>
+        <br></br>
+        Discharge on <b>{entry.discharge.date}</b> if{" "}
+        <b>{entry.discharge.criteria.toLowerCase()}</b>
       </p>
     </Segment>
   );
